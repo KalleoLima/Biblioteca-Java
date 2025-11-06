@@ -1,12 +1,14 @@
 package Biblioteca.src;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 public class BibliotecaService <T>  {
 
-    Map<String, Integer> livrosDisponiveis = new HashMap<>();
+    List<Livro> livrosDisponiveis = new ArrayList<>();
 
     Map<String, Integer> Usuariolist = new HashMap<>();
 
@@ -14,30 +16,28 @@ public class BibliotecaService <T>  {
 
 
 
-
     Scanner input = new Scanner(System.in);
 
     Usuario usuario;
 
- public  T AdicionandoLivro(String livro, Integer quantidade){
-     livrosDisponiveis.put(livro,quantidade);
+ public void adicionandoLivro(String titulo, String autor, int isbn, boolean disponibilidade){
+
+livrosDisponiveis.add(new Livro( titulo ,autor ,isbn,  disponibilidade));
 
 
 
-    return null;
+
 
  }
 
-    public void MostrarLivros(){
+    public void mostrarLivros(){
 
-        livrosDisponiveis.forEach((key, value) -> {
-            if (value >= 1)
-            System.out.println("nome do livro: " + key + "\nquantidades disponveis na biblioteca: " + value);
-            System.out.println();
-        });
+        for (Livro percorre : livrosDisponiveis){
+            System.out.println(percorre);
+        }
     }
 
-    public void EmprestandoLivros(){
+    public void emprestandoLivros(){
      String nomeUsuario;
      String livroEscolhido;
    System.out.println("digite seu nome: ");
@@ -47,22 +47,26 @@ public class BibliotecaService <T>  {
    if (Usuariolist.containsKey(nomeUsuario)){
        System.out.println("voce ja esta cadastrado!");
        System.out.println("esses são os livros disponiveis");
-       MostrarLivros();
+       mostrarLivros();
        System.out.println("escolha o livro que deseja: ");
 
        livroEscolhido = input.nextLine();
+   for(Livro L: livrosDisponiveis){
+       if (L.getTitulo().equalsIgnoreCase(livroEscolhido)){
 
-       if (livrosDisponiveis.containsKey(livroEscolhido)){
+           if (L.isDisponibilidade() == true){
+               System.out.println("Escolhi com sucesso!");
+               System.out.println(" Vôce tem até 15 dias para devolver o livro!! ");
+               L.setDisponibilidade(false);
+               livrosEmprestado.put(L.getTitulo(),nomeUsuario);
 
-           int qtdAtual = livrosDisponiveis.get(livroEscolhido);
-        if (qtdAtual > 0){
-            livrosDisponiveis.put(livroEscolhido, qtdAtual - 1);
-            System.out.println(" você tem até 15 dias para devolver o livro! ");
-            livrosEmprestado.put(nomeUsuario,livroEscolhido);
-        }else {
-            System.out.println(" desculpe, o livro não esta mais disponivel");
-        }
-       }else {System.out.println("esse livro não existe no catalogo");}
+
+
+           }else {System.out.println(" esse livro não está disponivel");}
+
+       }
+
+   }
 
 
 
@@ -74,7 +78,7 @@ public class BibliotecaService <T>  {
     }
 
 
-    public void CadastrarUsuario(String nome, Integer id){
+    public void cadastrarUsuario(String nome, Integer id){
 String opcao;
         if (Usuariolist.containsKey(nome)){
             System.out.println("esse nome ja existe, deseja adicionar ele novamente?");
@@ -94,6 +98,32 @@ String opcao;
 
 
     }
+    public void devolucao(){
+    System.out.println("digite seu nome completo! :");
+     String nomeDEvolucao = input.nextLine();
+    String livrodevolvido =null;
+     for (Map.Entry<String, String> entry : livrosEmprestado.entrySet()){
+     if (nomeDEvolucao.equalsIgnoreCase(entry.getValue())){
+        System.out.println("o livro que você pegou foi: " + entry.getKey());
+         System.out.println("📚 Livro devolvido com sucesso!");
+         livrodevolvido = entry.getKey();
+            break;
+     }}
 
+    if (livrodevolvido != null){
+livrosEmprestado.remove(livrodevolvido);
+
+for (Livro L : livrosDisponiveis){
+    if (L.getTitulo().equalsIgnoreCase(livrodevolvido)){
+        L.setDisponibilidade(true);
+        break;
+    }
+
+
+}
+    }
+
+else {System.out.println("Nenhum livro encontrado para o nome informado.");}
+ }
 
 }

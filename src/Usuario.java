@@ -11,7 +11,7 @@ public class Usuario  {
         this.id = id;
                 this.id ++;
 
-        bibliotecaService.CadastrarUsuario(name, id);
+        bibliotecaService.cadastrarUsuario(name, id);
 
 
 
